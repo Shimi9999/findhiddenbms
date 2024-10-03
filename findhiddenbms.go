@@ -31,7 +31,7 @@ func main() {
 
 	fInfo, err := os.Stat(path)
 	if err != nil {
-		fmt.Println("Path is wrong: ", err.Error())
+		fmt.Println("Wrong path: %w", err)
 		os.Exit(1)
 	}
 	if !fInfo.IsDir() {
@@ -132,22 +132,31 @@ func findInDirectory(dirPath string) error {
 		} else if !isIgnorePath(fileName) {
 			if !isIgnoreFileName(fileName) {
 				if isTargetFileName(fileName) {
-					fmt.Println("★★TargetName★★", filePath)
+					fmt.Println("**TargetFilename:", filePath)
 				} else if isZippedFile(fileName) {
-					fmt.Println("★Zipped★", filePath)
+					fmt.Println("*Zipfile:", filePath)
 				}
 			}
 			if !isIgnoreChartName(fileName) {
-				readFile(filePath)
+				err := readFile(filePath)
+				if err != nil {
+					return fmt.Errorf("readFile: %w", err)
+				}
 			}
 		} else if !isBmsPath(fileName) {
 			if !isNoCheckFile(fileName) {
 				isCorrect, err := isCorrectExt(filePath)
 				if !isCorrect && err == nil {
-					readFile(filePath)
+					err := readFile(filePath)
+					if err != nil {
+						return fmt.Errorf("readFile: %w", err)
+					}
 				}
 			} else if filepath.Ext(fileName) == ".txt" {
-				readFile(filePath)
+				err := readFile(filePath)
+				if err != nil {
+					return fmt.Errorf("readFile: %w", err)
+				}
 			}
 		}
 	}
@@ -209,13 +218,13 @@ func readFile(path string) error {
 			return fmt.Errorf("isNoObjBms: %w", err)
 		}
 		if !isNoObj {
-			fmt.Println("★HavingBms★", path)
+			fmt.Println("*hasBMS:", path)
 		}
 	} else if filepath.Ext(path) == ".txt" {
 		targetWords := []string{`隠し`, "kakushi", "hidden", "secret", `ひっそり`, `こっそり`}
 		for _, word := range targetWords {
 			if strings.Contains(string(bytes), word) {
-				fmt.Println("★★ContainsHiddenWords★★:", word, path)
+				fmt.Println("**ContainsHiddenWords:", word, path)
 				break
 			}
 		}
