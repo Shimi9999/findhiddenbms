@@ -13,7 +13,7 @@
 findhiddenbms <dirpath>
 ```
 
-## Exmaple
+## Example
 ```
 > findhiddenbms exampleFolder
 *hasBMS: exampleFolder\Song1\chart_kakushi.txt
